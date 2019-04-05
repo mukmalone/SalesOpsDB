@@ -30,8 +30,8 @@ struct SalesData
     public int hoursProcede;
     public int hoursRC;
     public int hoursRobot;
-    public double totalSalesHours;
-    public double totalAcceoHours;
+    public int totalHoursEstimated;
+    //public double totalAcceoHours;
     public string mainProcess;
     public string secondaryProcess;
     public string thirdProcess;
@@ -55,6 +55,7 @@ struct AcceoData
     public double friday;
     public double saturday;
     public double sunday;
+    public double weeklyTotal;
     public string description;
 }
 
@@ -253,7 +254,9 @@ namespace SalesOpsDB
                 }
                 int pkProject = DatabaseAccess.ProjectPK(connectionString, projectNumber);
 
-                if(pkProject == -1)
+                salesData[i].totalHoursEstimated = salesData[i].hoursAtelier + salesData[i].hoursElec + salesData[i].hoursGestion + salesData[i].hoursLogiciel + salesData[i].hoursMechanical + salesData[i].hoursProcede + salesData[i].hoursRC + salesData[i].hoursRobot;
+
+                if (pkProject == -1)
                 {
                     //not present so we add
                     DatabaseAccess.WriteProjectToDatabase(connectionString, salesData[i].accountName, salesData[i].opportunityName, 
@@ -262,7 +265,7 @@ namespace SalesOpsDB
                         salesData[i].hoursAtelier, salesData[i].hoursElec, salesData[i].hoursGestion, salesData[i].hoursLogiciel, 
                         salesData[i].hoursMechanical, salesData[i].hoursProcede, salesData[i].hoursRC, salesData[i].hoursRobot,
                         salesData[i].mainProcess, salesData[i].secondaryProcess, salesData[i].thirdProcess, salesData[i].sharepoint,
-                        projectNumber);
+                        projectNumber, salesData[i].totalHoursEstimated);
                 }
                 else
                 {
@@ -273,7 +276,7 @@ namespace SalesOpsDB
                         salesData[i].numberWeeks, salesData[i].hoursAtelier, salesData[i].hoursElec, salesData[i].hoursGestion,
                         salesData[i].hoursLogiciel, salesData[i].hoursMechanical, salesData[i].hoursProcede, salesData[i].hoursRC,
                         salesData[i].hoursRobot, salesData[i].mainProcess, salesData[i].secondaryProcess, salesData[i].thirdProcess,
-                        salesData[i].sharepoint);
+                        salesData[i].sharepoint, salesData[i].totalHoursEstimated);
                 }
             }
             
@@ -425,7 +428,7 @@ namespace SalesOpsDB
                     //means it could be an admin task and we need to add it
                     DatabaseAccess.WriteProjectToDatabase(connectionString, "ACCEO", "ACCEO",
                         "", "", 0, DateTime.Now, "", DateTime.Now, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        "", "", "", "", projectNumber);
+                        "", "", "", "", projectNumber, 0);
                     pkOpportunity = DatabaseAccess.ProjectPK(connectionString, projectNumber);
                 }
                 int timeSheetPk = DatabaseAccess.TimeSheetPK(connectionString, acceoData[i].projectTask, pkOpportunity, 
@@ -433,11 +436,12 @@ namespace SalesOpsDB
 
                 if(timeSheetPk == -1)
                 {
+                    acceoData[i].weeklyTotal = acceoData[i].monday + acceoData[i].tuesday + acceoData[i].wednesday + acceoData[i].thursday + acceoData[i].friday + acceoData[i].saturday + acceoData[i].sunday;
                     //we are ok to add
                     DatabaseAccess.WriteTimeSheetToDatabase(connectionString, pkOpportunity, acceoData[i].projectTask,
                         acceoData[i].projectTaskDescription,acceoData[i].refNumber,namePk,acceoData[i].weekDescription,weekPk, 
                         acceoData[i].totalHours, acceoData[i].monday, acceoData[i].tuesday, acceoData[i].wednesday,
-                        acceoData[i].thursday, acceoData[i].friday, acceoData[i].saturday, acceoData[i].sunday, acceoData[i].description);
+                        acceoData[i].thursday, acceoData[i].friday, acceoData[i].saturday, acceoData[i].sunday, acceoData[i].description, acceoData[i].weeklyTotal);
                 }
                 else
                 {

@@ -46,7 +46,7 @@ namespace SalesOpsDB
         public static void WriteProjectToDatabase(string connectionString, string accountName, string projectName, string confidence, 
             string stage, int probability, DateTime closeDate, string carnetAssignment, DateTime carnetAssignmentDate, int numberWeeks, 
             int hoursAtelier, int hoursElec, int hoursGestion, int hoursLogiciel, int hoursMechanical, int hoursProcede, int hoursRC, 
-            int hoursRobot, string mainProcess, string secondaryProcess, string thirdProcess, string sharepoint, string projectNumber)
+            int hoursRobot, string mainProcess, string secondaryProcess, string thirdProcess, string sharepoint, string projectNumber, int totalHoursEstimated)
         {
             SqlConnection cnn;
             SqlCommand commandInsert;
@@ -56,7 +56,7 @@ namespace SalesOpsDB
                 "closeDate, carnetAssignment, carnetAssignmentDate, numberWeeks, " +
                 "hoursAtelier, hoursElec, hoursGestion, hoursLogiciel, hoursMechanical, " +
                 "hoursProcede, hoursRC, hoursRobot, mainProcess, secondaryProcess, thirdProcess, " +
-                "sharepoint, projectNumber) " +
+                "sharepoint, projectNumber, totalHoursEstimated) " +
                 "VALUES ('" + accountName + "', " +
                 "'" + projectName + "'," +
                 "'" + confidence + "'," +
@@ -78,7 +78,8 @@ namespace SalesOpsDB
                 "'" + secondaryProcess + "'," +
                 "'" + thirdProcess + "'," +
                 "'" + sharepoint + "'," +
-                "'" + projectNumber + "');";
+                "'" + projectNumber + "'," +
+                totalHoursEstimated.ToString() + "); ";
 
             cnn = new SqlConnection(connectionString);
 
@@ -100,7 +101,7 @@ namespace SalesOpsDB
         public static void UpdateProjectInDatabase(string connectionString, int pkProject,string accountName, string projectName, string confidence,
     string stage, int probability, DateTime closeDate, string carnetAssignment, DateTime carnetAssignmentDate, int numberWeeks,
     int hoursAtelier, int hoursElec, int hoursGestion, int hoursLogiciel, int hoursMechanical, int hoursProcede, int hoursRC,
-    int hoursRobot, string mainProcess, string secondaryProcess, string thirdProcess, string sharepoint)
+    int hoursRobot, string mainProcess, string secondaryProcess, string thirdProcess, string sharepoint, int totalHoursEstimated)
         {
             SqlConnection cnn;
             SqlCommand commandInsert;
@@ -126,8 +127,9 @@ namespace SalesOpsDB
                 "mainProcess = '" + mainProcess + "'," +
                 "secondaryProcess = '" + secondaryProcess + "'," +
                 "thirdProcess = '" + thirdProcess + "'," +
-                "sharepoint = '" + sharepoint + "'" +
-                "WHERE pkProjectNumber = " + pkProject.ToString() + ";";
+                "sharepoint = '" + sharepoint + "'," +
+                "totalHoursEstimated = " + totalHoursEstimated.ToString() +
+                " WHERE pkProjectNumber = " + pkProject.ToString() + ";";
 
             cnn = new SqlConnection(connectionString);
 
@@ -307,14 +309,14 @@ namespace SalesOpsDB
         public static void WriteTimeSheetToDatabase(string connectionString, int fkOpportunity, string projectTask, 
             string projectTaskDescription, string refNumber, int fkResource, string week, int fkWeek, double totalHours,
             double monday, double tuesday, double wednesday, double thursday, double friday, double saturday, double sunday,
-            string description)
+            string description, double weeklyTotal)
         {
             SqlConnection cnn;
             SqlCommand commandInsert;
 
             string sql = null;
             sql = "INSERT INTO TimeSheet(fkOpportunity, projectTask, projectTaskDescriptison, refNumber, fkResource, " +
-                "week,fkWeek,totalHours, monday, tuesday, wednesday, thursday, friday, saturday, sunday, description) VALUES ("
+                "week,fkWeek,totalHours, monday, tuesday, wednesday, thursday, friday, saturday, sunday, description, weeklyTotal) VALUES ("
                 + fkOpportunity.ToString() + ","
                 + "'" + projectTask + "',"
                 + "'" + projectTaskDescription + "',"
@@ -330,7 +332,8 @@ namespace SalesOpsDB
                 + friday.ToString() + ","
                 + saturday.ToString() + ","
                 + sunday.ToString() + ","
-                + "'" + description + "');";
+                + "'" + description + "',"
+                + weeklyTotal.ToString() + ");";
              
 
             cnn = new SqlConnection(connectionString);

@@ -53,7 +53,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1266, 590);
+            this.ClientSize = new System.Drawing.Size(636, 190);
             this.Controls.Add(this.textBoxDebug);
             this.Controls.Add(this.buttonUpdateData);
             this.Name = "FormSalesOpsDB";
