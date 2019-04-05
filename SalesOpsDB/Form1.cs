@@ -394,6 +394,7 @@ namespace SalesOpsDB
             //*******************************************************************************
             //PUT ACCEO DATA IN DB
             //*******************************************************************************
+            int duplicateTimesheet = 0;
 
             for(int i = 0; i < acceoData.Length; i++)
             {
@@ -445,13 +446,16 @@ namespace SalesOpsDB
                 }
                 else
                 {
-                    textBoxDebug.Text = textBoxDebug.Text + "shit";
-                }
 
+                    duplicateTimesheet += 1;
+
+                }
+                
             }
 
+            DatabaseAccess.WriteDebugToDatabase(connectionString, "Number of Duplicate Timesheets: " + duplicateTimesheet.ToString(), DateTime.Now);
 
-            textBoxDebug.Text = textBoxDebug.Text + "  ACCEO FINISHED";
+            textBoxDebug.Text = "Update Finished";
         }
     }
 }

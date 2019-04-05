@@ -37,7 +37,8 @@ namespace SalesOpsDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can not open connection projectNumberPK");
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
             }
             cnn.Close();
             return result;
@@ -93,7 +94,8 @@ namespace SalesOpsDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can not open connection write Event: " + sql);
+                //Console.WriteLine("Can not open connection write Event: " + sql);
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
             }
             cnn.Close();
         }
@@ -143,7 +145,8 @@ namespace SalesOpsDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can not open connection write Event: " + sql);
+                //Console.WriteLine("Can not open connection write Event: " + sql);
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
             }
             cnn.Close();
         }
@@ -176,7 +179,8 @@ namespace SalesOpsDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can not open connection projectNumberPK");
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
             }
             cnn.Close();
             return result;
@@ -203,7 +207,8 @@ namespace SalesOpsDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can not open connection write Event: " + sql);
+                //Console.WriteLine("Can not open connection write Event: " + sql);
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
             }
             cnn.Close();
         }
@@ -236,7 +241,8 @@ namespace SalesOpsDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can not open connection projectNumberPK");
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
             }
             cnn.Close();
             return result;
@@ -263,7 +269,8 @@ namespace SalesOpsDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can not open connection write Event: " + sql);
+                //Console.WriteLine("Can not open connection write Event: " + sql);
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
             }
             cnn.Close();
         }
@@ -300,7 +307,8 @@ namespace SalesOpsDB
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Can not open connection projectNumberPK");
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
             }
             cnn.Close();
             return result;
@@ -335,6 +343,33 @@ namespace SalesOpsDB
                 + "'" + description + "',"
                 + weeklyTotal.ToString() + ");";
              
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+                commandInsert = new SqlCommand(sql, cnn);
+
+                commandInsert.ExecuteNonQuery();
+                commandInsert.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Can not open connection write Event: " + sql);
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+        }
+
+        public static void WriteDebugToDatabase(string connectionString, string debugString, DateTime date)
+        {
+            SqlConnection cnn;
+            SqlCommand commandInsert;
+
+            string sql = null;
+            sql = "INSERT INTO DebugTable(debugMessage, dateTime) Values ('" + debugString + "','" + date.ToString() + "');";
+
 
             cnn = new SqlConnection(connectionString);
 
