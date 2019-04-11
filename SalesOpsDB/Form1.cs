@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,11 +32,11 @@ struct SalesData
     public int hoursRC;
     public int hoursRobot;
     public int totalHoursEstimated;
-    //public double totalAcceoHours;
     public string mainProcess;
     public string secondaryProcess;
     public string thirdProcess;
     public string sharepoint;
+    public string systemProposed;
 }
 
 struct AcceoData
@@ -59,6 +60,13 @@ struct AcceoData
     public string description;
 }
 
+struct WeeklyProjectBurn
+{
+    public string weekNumber;
+    public string projectNumber;
+    public double weeklyTotal;
+}
+
 namespace SalesOpsDB
 {
     public partial class FormSalesOpsDB : Form
@@ -66,6 +74,43 @@ namespace SalesOpsDB
         public FormSalesOpsDB()
         {
             InitializeComponent();
+            string connectionString = @"Data Source=AVR-L093\SQLEXPRESS;Initial Catalog=SalesOps;Integrated Security=SSPI;";
+            List<string> weeks = DatabaseAccess.GetListofWeeks(connectionString);
+            List<string> teams = DatabaseAccess.GetListofTeams(connectionString);
+            List<string> departments = DatabaseAccess.GetListofDepartments(connectionString);
+            List<string> projects = DatabaseAccess.GetListofProjects(connectionString);
+
+            listBoxDepartments.SelectionMode = SelectionMode.MultiSimple;
+            for (int j = 0; j < departments.Count; j++)
+            {
+                listBoxDepartments.Items.Add(departments[j]);
+                listBoxDepartments.SetSelected(j, true);
+            }
+            listBoxDepartments.Update();
+
+            listBoxTeams.SelectionMode = SelectionMode.MultiSimple;
+            for (int j = 0; j < teams.Count; j++)
+            {
+                listBoxTeams.Items.Add(teams[j]);
+                listBoxTeams.SetSelected(j, true);
+            }
+            listBoxTeams.Update();
+
+            listBoxWeeks.SelectionMode = SelectionMode.MultiSimple;
+            for (int j = 0; j < weeks.Count; j++)
+            {
+                listBoxWeeks.Items.Add(weeks[j]);
+            //    listBoxWeeks.SetSelected(j, true);
+            }
+            listBoxWeeks.Update();
+
+            listBoxProjects.SelectionMode = SelectionMode.MultiSimple;
+            for (int j = 0; j < projects.Count; j++)
+            {
+                listBoxProjects.Items.Add(projects[j]);
+                listBoxProjects.SetSelected(j, true);
+            }
+            listBoxWeeks.Update();
         }
 
         private void buttonUpdateData_Click(object sender, EventArgs e)
@@ -227,6 +272,7 @@ namespace SalesOpsDB
                     salesData[r].secondaryProcess = line_r[20];
                     salesData[r].thirdProcess = line_r[21];
                     salesData[r].sharepoint = line_r[22];
+                    salesData[r].systemProposed = line_r[23];
                 }
 
                 textBoxDebug.Text = r.ToString();
@@ -265,7 +311,7 @@ namespace SalesOpsDB
                         salesData[i].hoursAtelier, salesData[i].hoursElec, salesData[i].hoursGestion, salesData[i].hoursLogiciel, 
                         salesData[i].hoursMechanical, salesData[i].hoursProcede, salesData[i].hoursRC, salesData[i].hoursRobot,
                         salesData[i].mainProcess, salesData[i].secondaryProcess, salesData[i].thirdProcess, salesData[i].sharepoint,
-                        projectNumber, salesData[i].totalHoursEstimated);
+                        projectNumber, salesData[i].systemProposed, salesData[i].totalHoursEstimated);
                 }
                 else
                 {
@@ -276,7 +322,7 @@ namespace SalesOpsDB
                         salesData[i].numberWeeks, salesData[i].hoursAtelier, salesData[i].hoursElec, salesData[i].hoursGestion,
                         salesData[i].hoursLogiciel, salesData[i].hoursMechanical, salesData[i].hoursProcede, salesData[i].hoursRC,
                         salesData[i].hoursRobot, salesData[i].mainProcess, salesData[i].secondaryProcess, salesData[i].thirdProcess,
-                        salesData[i].sharepoint, salesData[i].totalHoursEstimated);
+                        salesData[i].sharepoint, salesData[i].systemProposed, salesData[i].totalHoursEstimated);
                 }
             }
             
@@ -429,7 +475,7 @@ namespace SalesOpsDB
                     //means it could be an admin task and we need to add it
                     DatabaseAccess.WriteProjectToDatabase(connectionString, "ACCEO", "ACCEO",
                         "", "", 0, DateTime.Now, "", DateTime.Now, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                        "", "", "", "", projectNumber, 0);
+                        "", "", "", "", projectNumber, "" ,0);
                     pkOpportunity = DatabaseAccess.ProjectPK(connectionString, projectNumber);
                 }
                 int timeSheetPk = DatabaseAccess.TimeSheetPK(connectionString, acceoData[i].projectTask, pkOpportunity, 
@@ -456,6 +502,153 @@ namespace SalesOpsDB
             DatabaseAccess.WriteDebugToDatabase(connectionString, "Number of Duplicate Timesheets: " + duplicateTimesheet.ToString(), DateTime.Now);
 
             textBoxDebug.Text = "Update Finished";
+        }
+
+        private void buttonUpdateChart_Click(object sender, EventArgs e)
+        {
+            string connectionString = @"Data Source=AVR-L093\SQLEXPRESS;Initial Catalog=SalesOps;Integrated Security=SSPI;";
+
+            //these are all the lists I need to manipulate if I want to have different charts
+
+            List<string> weeks = DatabaseAccess.GetListofWeeks(connectionString);
+            List<string> teams = DatabaseAccess.GetListofTeams(connectionString);
+            List<string> departments = DatabaseAccess.GetListofDepartments(connectionString);
+            List<string> projects = DatabaseAccess.GetListofProjects(connectionString);
+
+            List<double> hours = new List<double>();
+            double runningTotal;
+
+
+
+            //*******************************************************************************
+            //this is where all the charting of existing efforts go
+            //*******************************************************************************
+
+            //get weekly hours available for the resources selected
+            //for each department selected check the team selected
+
+            string fullHoursQueryString = "";
+            string headerHoursQueryString = "";
+            string departmentQueryString = "";
+            string teamQueryString = "";
+            string departmentTeamQueryString = "";
+
+            for (int j = 0; j < listBoxDepartments.Items.Count; j++)
+            {
+                //check if department is selected
+                if (listBoxDepartments.GetSelected(j))
+                {
+                    if (departmentQueryString == "")
+                    {
+                        //first one
+                        departmentQueryString = "(r.department like '"
+                            + listBoxDepartments.Items[j].ToString() + "'";
+                    }
+                    else
+                    {
+                        //next query module
+                        departmentQueryString += " OR r.department like '" + listBoxDepartments.Items[j].ToString() + "'";
+                    }
+
+                }
+            }
+            for (int i = 0; i < listBoxTeams.Items.Count; i++)
+            {
+                if (listBoxTeams.GetSelected(i))
+                {
+                    if (teamQueryString == "")
+                    {
+                        //first one
+                        teamQueryString = " AND (r.team like '"
+                            + listBoxTeams.Items[i].ToString() + "'";
+                    }
+                    else
+                    {
+                        //next query module
+                        teamQueryString += " OR r.team like '" + listBoxTeams.Items[i].ToString() + "'";
+                    }
+                }
+            }
+            departmentTeamQueryString = departmentQueryString + ") " + teamQueryString + ") " + " AND r.status like 'active';";
+            headerHoursQueryString = "select sum(weeklyAvailability) from Resources AS r where ";
+            fullHoursQueryString = headerHoursQueryString + departmentTeamQueryString;
+            double weeklyHoursAvailable = DatabaseAccess.GetAvailableWeeklyHours(connectionString, fullHoursQueryString);
+
+
+            //now for each week selected let's cycle through each project and sum the hours based upon the Teams and Departments selected
+            List<WeeklyProjectBurn> burnedHoursInProjects = new List<WeeklyProjectBurn>();
+            WeeklyProjectBurn data = new WeeklyProjectBurn();
+
+            string projectWeeklyHoursQueryString = "";
+            string headerProjectWeeklyHours = "select sum(weeklyTotal) from TimeSheet as ts " +
+                "inner join Week as w on w.pkWeek = ts.fkWeek " +
+                "inner join Resources as r on r.pkResource = ts.fkResource " +
+                "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
+                "where w.weekNumber = '";
+            string project = "";
+            string weekNumber = "";
+            int index = 0;
+
+            //I need to filter the list of weeks to only the selected weeks
+           /* foreach (string test in listBoxWeeks.SelectedItems)
+            {
+                int i = 0;
+            }*/
+            for (int j = 0; j < listBoxWeeks.Items.Count; j++)
+            {
+                if (listBoxWeeks.GetSelected(j))
+                {
+                    weekNumber = listBoxWeeks.Items[j].ToString();
+                    for (int i = 0; i < listBoxProjects.Items.Count; i++)
+                    {
+                        if (listBoxProjects.GetSelected(i))
+                        {
+                            project = listBoxProjects.Items[i].ToString();
+                            projectWeeklyHoursQueryString = headerProjectWeeklyHours + weekNumber + "' AND p.projectNumber = '" +
+                                project + "'AND" + departmentTeamQueryString;
+                            double hourTotal = DatabaseAccess.GetHoursWeekProjectResourceTeam(connectionString, projectWeeklyHoursQueryString);
+                            if (hourTotal> 0)
+                            {
+                                data.weekNumber = weekNumber;
+                                data.projectNumber = project;
+                                data.weeklyTotal = hourTotal;
+                                burnedHoursInProjects.Add(data);
+                            }
+                            
+                        }
+                    }
+                   
+                }
+            }
+
+            index += 1;
+            /*
+            for (int j = 0; j < weeks.Count; j++)
+            {
+                chartForecast.Series["SeriesHoursAvailable"].Points.AddXY(weeks[j], weeklyHoursAvailable);
+            }
+            chartForecast.Update();*/
+
+            for (int i = 0; i < burnedHoursInProjects.Count; i++)
+            {
+                if (chartForecast.Series.IndexOf(burnedHoursInProjects[i].projectNumber) == -1)
+                {
+                    //it doesn't exist so we need to add it
+                    chartForecast.Series.Add(new Series(burnedHoursInProjects[i].projectNumber));
+                }
+                
+                chartForecast.Series[burnedHoursInProjects[i].projectNumber].IsValueShownAsLabel = false;
+                chartForecast.Series[burnedHoursInProjects[i].projectNumber].ChartType = SeriesChartType.StackedColumn;
+                chartForecast.Series[burnedHoursInProjects[i].projectNumber].Points.AddXY(burnedHoursInProjects[i].weekNumber, burnedHoursInProjects[i].weeklyTotal);
+            }
+            chartForecast.Update();
+            textBoxDebug.Text += " " + weeks.Count;
+
+        }
+
+        private void chartForecast_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

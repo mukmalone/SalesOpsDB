@@ -47,7 +47,7 @@ namespace SalesOpsDB
         public static void WriteProjectToDatabase(string connectionString, string accountName, string projectName, string confidence, 
             string stage, int probability, DateTime closeDate, string carnetAssignment, DateTime carnetAssignmentDate, int numberWeeks, 
             int hoursAtelier, int hoursElec, int hoursGestion, int hoursLogiciel, int hoursMechanical, int hoursProcede, int hoursRC, 
-            int hoursRobot, string mainProcess, string secondaryProcess, string thirdProcess, string sharepoint, string projectNumber, int totalHoursEstimated)
+            int hoursRobot, string mainProcess, string secondaryProcess, string thirdProcess, string sharepoint, string projectNumber, string systemProposed, int totalHoursEstimated)
         {
             SqlConnection cnn;
             SqlCommand commandInsert;
@@ -57,7 +57,7 @@ namespace SalesOpsDB
                 "closeDate, carnetAssignment, carnetAssignmentDate, numberWeeks, " +
                 "hoursAtelier, hoursElec, hoursGestion, hoursLogiciel, hoursMechanical, " +
                 "hoursProcede, hoursRC, hoursRobot, mainProcess, secondaryProcess, thirdProcess, " +
-                "sharepoint, projectNumber, totalHoursEstimated) " +
+                "sharepoint, projectNumber, systemProposed, totalHoursEstimated) " +
                 "VALUES ('" + accountName + "', " +
                 "'" + projectName + "'," +
                 "'" + confidence + "'," +
@@ -80,6 +80,7 @@ namespace SalesOpsDB
                 "'" + thirdProcess + "'," +
                 "'" + sharepoint + "'," +
                 "'" + projectNumber + "'," +
+                "'" + systemProposed + "'," +
                 totalHoursEstimated.ToString() + "); ";
 
             cnn = new SqlConnection(connectionString);
@@ -103,7 +104,7 @@ namespace SalesOpsDB
         public static void UpdateProjectInDatabase(string connectionString, int pkProject,string accountName, string projectName, string confidence,
     string stage, int probability, DateTime closeDate, string carnetAssignment, DateTime carnetAssignmentDate, int numberWeeks,
     int hoursAtelier, int hoursElec, int hoursGestion, int hoursLogiciel, int hoursMechanical, int hoursProcede, int hoursRC,
-    int hoursRobot, string mainProcess, string secondaryProcess, string thirdProcess, string sharepoint, int totalHoursEstimated)
+    int hoursRobot, string mainProcess, string secondaryProcess, string thirdProcess, string sharepoint, string systemProposed, int totalHoursEstimated)
         {
             SqlConnection cnn;
             SqlCommand commandInsert;
@@ -130,6 +131,7 @@ namespace SalesOpsDB
                 "secondaryProcess = '" + secondaryProcess + "'," +
                 "thirdProcess = '" + thirdProcess + "'," +
                 "sharepoint = '" + sharepoint + "'," +
+                "systemProposed = '" + systemProposed + "'," +
                 "totalHoursEstimated = " + totalHoursEstimated.ToString() +
                 " WHERE pkProjectNumber = " + pkProject.ToString() + ";";
 
@@ -386,6 +388,254 @@ namespace SalesOpsDB
                 Console.WriteLine("Can not open connection write Event: " + sql);
             }
             cnn.Close();
+        }
+
+        public static double GetAvailableWeeklyHours(string connectionString, string fullQueryString)
+        {
+            double result = 0;
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = fullQueryString;
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result = Convert.ToDouble(dataReader.GetValue(0));
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
+        public static double GetHoursWeekProjectResourceTeam(string connectionString, string queryString)
+        {
+            
+            double result = 0;
+            
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = queryString;
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result = Convert.ToDouble(dataReader.GetValue(0));
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
+        public static List<string> GetListofWeeks(string connectionString)
+        {
+            
+            List<string> result = new List<string>();
+            
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select weekNumber from Week order by weekNumber;";
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result.Add(Convert.ToString(dataReader.GetValue(0)));
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
+        public static List<string> GetListofProjects(string connectionString)
+        {
+
+            List<string> result = new List<string>();
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select projectNumber from Project where accountName not like 'acceo' order by projectNumber;";
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result.Add(Convert.ToString(dataReader.GetValue(0)).Trim());
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
+        public static double GetProjectHoursInWeek(string connectionString,string weekNumber, string projectNumber)
+        {
+            double result = 0;
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select sum(totalHours) from TimeSheet as ts " +
+                "inner join Project as p on p.pkProjectNumber =ts.fkOpportunity " +
+                "inner join Week as w on w.pkWeek = ts.fkWeek " +
+                "where w.weekNumber like '" + weekNumber.Trim() + "' and p.projectNumber like '" + projectNumber.Trim() +" ';";
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result = Convert.ToDouble(dataReader.GetValue(0));
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+        public static List<string> GetListofTeams(string connectionString)
+        {
+
+            List<string> result = new List<string>();
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select distinct team from Resources order by team asc;";
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result.Add(Convert.ToString(dataReader.GetValue(0)).Trim());
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
+        public static List<string> GetListofDepartments(string connectionString)
+        {
+
+            List<string> result = new List<string>();
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select distinct department from Resources order by department asc;";
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result.Add(Convert.ToString(dataReader.GetValue(0)).Trim());
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
         }
 
     }
