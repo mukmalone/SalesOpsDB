@@ -31,7 +31,6 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             this.buttonUpdateData = new System.Windows.Forms.Button();
             this.textBoxDebug = new System.Windows.Forms.TextBox();
-            this.chartForecast = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.buttonUpdateChart = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabControlMainInterface = new System.Windows.Forms.TabControl();
@@ -48,13 +47,14 @@
             this.ProjectNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.WeeklyTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.textBoxAvailableHours = new System.Windows.Forms.TextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.chartForecast)).BeginInit();
+            this.chartForecast = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tabControlMainInterface.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewForecast)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartForecast)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonUpdateData
@@ -73,17 +73,6 @@
             this.textBoxDebug.Name = "textBoxDebug";
             this.textBoxDebug.Size = new System.Drawing.Size(397, 20);
             this.textBoxDebug.TabIndex = 1;
-            // 
-            // chartForecast
-            // 
-            chartArea1.Name = "ChartAreaForecast";
-            this.chartForecast.ChartAreas.Add(chartArea1);
-            this.chartForecast.Location = new System.Drawing.Point(19, 33);
-            this.chartForecast.Name = "chartForecast";
-            this.chartForecast.Size = new System.Drawing.Size(1277, 442);
-            this.chartForecast.TabIndex = 2;
-            this.chartForecast.Text = "chart1";
-            this.chartForecast.Click += new System.EventHandler(this.chartForecast_Click);
             // 
             // buttonUpdateChart
             // 
@@ -176,8 +165,8 @@
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.textBoxAvailableHours);
             this.tabPage4.Controls.Add(this.chartForecast);
+            this.tabPage4.Controls.Add(this.textBoxAvailableHours);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
@@ -232,6 +221,16 @@
             this.textBoxAvailableHours.Size = new System.Drawing.Size(221, 13);
             this.textBoxAvailableHours.TabIndex = 3;
             // 
+            // chartForecast
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.chartForecast.ChartAreas.Add(chartArea1);
+            this.chartForecast.Location = new System.Drawing.Point(23, 40);
+            this.chartForecast.Name = "chartForecast";
+            this.chartForecast.Size = new System.Drawing.Size(1244, 435);
+            this.chartForecast.TabIndex = 4;
+            this.chartForecast.Text = "chart1";
+            // 
             // FormSalesOpsDB
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -243,7 +242,6 @@
             this.Name = "FormSalesOpsDB";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SalesOPsDB";
-            ((System.ComponentModel.ISupportInitialize)(this.chartForecast)).EndInit();
             this.tabControlMainInterface.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -252,6 +250,7 @@
             this.tabPage4.PerformLayout();
             this.tabPage5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewForecast)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartForecast)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -260,7 +259,6 @@
 
         private System.Windows.Forms.Button buttonUpdateData;
         private System.Windows.Forms.TextBox textBoxDebug;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chartForecast;
         private System.Windows.Forms.Button buttonUpdateChart;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabControl tabControlMainInterface;
@@ -277,6 +275,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ProjectNumber;
         private System.Windows.Forms.DataGridViewTextBoxColumn WeeklyTotal;
         private System.Windows.Forms.TextBox textBoxAvailableHours;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartForecast;
     }
 }
 

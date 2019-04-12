@@ -365,6 +365,10 @@ namespace SalesOpsDB
             {
                 string[] line_r = linesAcceo[p].Split(',');
                 int r = p - 1;
+                if (r == 12607)
+                {
+                    int test = 0;
+                }
                 if (p != 0)
                 {
                     acceoData[r].projectNumber = line_r[0];
@@ -376,11 +380,6 @@ namespace SalesOpsDB
                     acceoData[r].weekDescription = line_r[6];
                     acceoData[r].totalHours = Convert.ToDouble(line_r[7]);
                     
-                    if(r == 481)
-                    {
-                        int t = 0;
-                    }
-
                     if (line_r[8].Equals(""))
                     {
                         acceoData[r].monday = 0;
@@ -517,7 +516,6 @@ namespace SalesOpsDB
         private void buttonUpdateChart_Click(object sender, EventArgs e)
         {
             string connectionString = @"Data Source=AVR-L093\SQLEXPRESS;Initial Catalog=SalesOps;Integrated Security=SSPI;";
-            chartForecast.Series.Clear();
             //these are all the lists I need to manipulate if I want to have different charts
 
             List<string> weeks = DatabaseAccess.GetListofWeeks(connectionString);
@@ -634,18 +632,19 @@ namespace SalesOpsDB
             for (int i = 0; i < burnedHoursInProjects.Count; i++)
             {
                 if (chartForecast.Series.IndexOf(burnedHoursInProjects[i].projectNumber) == -1)
-                {   
+                {
                     //it doesn't exist so we need to add it
                     chartForecast.Series.Add(new Series(burnedHoursInProjects[i].projectNumber));
                     chartForecast.Series[burnedHoursInProjects[i].projectNumber].IsValueShownAsLabel = false;
                     chartForecast.Series[burnedHoursInProjects[i].projectNumber].ChartType = SeriesChartType.StackedColumn;
                 }
-                
+
                 chartForecast.Series[burnedHoursInProjects[i].projectNumber].Points.AddXY(Convert.ToInt32(burnedHoursInProjects[i].weekNumber), burnedHoursInProjects[i].weeklyTotal);
                 chartForecast.Series[burnedHoursInProjects[i].projectNumber].ToolTip = "Project: " + burnedHoursInProjects[i].projectNumber 
                     + "\r\nAccount: " + burnedHoursInProjects[i].accountName
                     + "\r\nProject Name: " + burnedHoursInProjects[i].projectName
                     + "\r\nHours: " + burnedHoursInProjects[i].weeklyTotal.ToString();
+                    
                 dataGridViewForecast.Rows.Add(burnedHoursInProjects[i].weekNumber, burnedHoursInProjects[i].projectNumber, burnedHoursInProjects[i].weeklyTotal);
             }
             chartForecast.Update();

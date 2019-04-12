@@ -640,7 +640,7 @@ namespace SalesOpsDB
 
         public static List<string[]> GetRelevantProjects(string connectionString, string weekNumber, string departmentTeamQueryString)
         {
-            string[] projectArray = new string[3];
+
             List<string[]> result = new List<string[]>();
 
             SqlConnection cnn;
@@ -648,7 +648,6 @@ namespace SalesOpsDB
             SqlDataReader dataReader;
 
             string sql = null;
-            //where accountName not like 'acceo' 
             sql = "select distinct p.projectNumber, p.accountName, p.projectName from TimeSheet as ts " +
                 "inner join Week as w on w.pkWeek = ts.fkWeek " +
                 "inner join Resources as r on r.pkResource = ts.fkResource " +
@@ -665,6 +664,7 @@ namespace SalesOpsDB
                 dataReader = command.ExecuteReader();
                 while (dataReader.Read())
                 {
+                    string[] projectArray = new string[3];
                     projectArray[0] = Convert.ToString(dataReader.GetValue(0)).Trim();
                     projectArray[1] = Convert.ToString(dataReader.GetValue(1));
                     projectArray[2] = Convert.ToString(dataReader.GetValue(2));
@@ -689,7 +689,6 @@ namespace SalesOpsDB
             SqlDataReader dataReader;
 
             string sql = null;
-            //where accountName not like 'acceo' 
             sql = "delete from TimeSheet;";
 
             cnn = new SqlConnection(connectionString);
