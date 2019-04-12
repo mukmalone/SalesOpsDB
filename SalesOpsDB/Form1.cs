@@ -64,6 +64,8 @@ struct WeeklyProjectBurn
 {
     public string weekNumber;
     public string projectNumber;
+    public string accountName;
+    public string projectName;
     public double weeklyTotal;
 }
 
@@ -100,7 +102,7 @@ namespace SalesOpsDB
             for (int j = 0; j < weeks.Count; j++)
             {
                 listBoxWeeks.Items.Add(weeks[j]);
-            //    listBoxWeeks.SetSelected(j, true);
+                //listBoxWeeks.SetSelected(j, true);
             }
             listBoxWeeks.Update();
 
@@ -373,6 +375,12 @@ namespace SalesOpsDB
                     acceoData[r].week = line_r[5];
                     acceoData[r].weekDescription = line_r[6];
                     acceoData[r].totalHours = Convert.ToDouble(line_r[7]);
+                    
+                    if(r == 481)
+                    {
+                        int t = 0;
+                    }
+
                     if (line_r[8].Equals(""))
                     {
                         acceoData[r].monday = 0;
@@ -442,6 +450,8 @@ namespace SalesOpsDB
             //*******************************************************************************
             int duplicateTimesheet = 0;
 
+            DatabaseAccess.ClearTimeSheetTable(connectionString);
+
             for(int i = 0; i < acceoData.Length; i++)
             {
                 int namePk = DatabaseAccess.ResourcePK(connectionString, acceoData[i].employeeName);
@@ -481,7 +491,7 @@ namespace SalesOpsDB
                 int timeSheetPk = DatabaseAccess.TimeSheetPK(connectionString, acceoData[i].projectTask, pkOpportunity, 
                     namePk, weekPk, acceoData[i].description);
 
-                if(timeSheetPk == -1)
+                if(timeSheetPk > -5)
                 {
                     acceoData[i].weeklyTotal = acceoData[i].monday + acceoData[i].tuesday + acceoData[i].wednesday + acceoData[i].thursday + acceoData[i].friday + acceoData[i].saturday + acceoData[i].sunday;
                     //we are ok to add
@@ -507,7 +517,7 @@ namespace SalesOpsDB
         private void buttonUpdateChart_Click(object sender, EventArgs e)
         {
             string connectionString = @"Data Source=AVR-L093\SQLEXPRESS;Initial Catalog=SalesOps;Integrated Security=SSPI;";
-
+            chartForecast.Series.Clear();
             //these are all the lists I need to manipulate if I want to have different charts
 
             List<string> weeks = DatabaseAccess.GetListofWeeks(connectionString);
@@ -585,61 +595,58 @@ namespace SalesOpsDB
                 "inner join Resources as r on r.pkResource = ts.fkResource " +
                 "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
                 "where w.weekNumber = '";
-            string project = "";
-            string weekNumber = "";
-            int index = 0;
 
-            //I need to filter the list of weeks to only the selected weeks
-           /* foreach (string test in listBoxWeeks.SelectedItems)
+            List<string> test = new List<string>();
+            foreach (string weekNumber in listBoxWeeks.SelectedItems)
             {
-                int i = 0;
-            }*/
-            for (int j = 0; j < listBoxWeeks.Items.Count; j++)
+                test.Add(weekNumber);
+            }
+
+
+                //I need to filter the list of weeks to only the selected weeks
+            foreach (string weekNumber in listBoxWeeks.SelectedItems)
             {
-                if (listBoxWeeks.GetSelected(j))
+                List<string[]> releveantProjects = DatabaseAccess.GetRelevantProjects(connectionString, weekNumber, departmentTeamQueryString);
+                for(int i = 0; i < releveantProjects.Count; i++)
                 {
-                    weekNumber = listBoxWeeks.Items[j].ToString();
-                    for (int i = 0; i < listBoxProjects.Items.Count; i++)
+                    string project = releveantProjects[i][0];
+                    projectWeeklyHoursQueryString = headerProjectWeeklyHours + weekNumber + "' AND p.projectNumber = '" +
+                        project + "'AND" + departmentTeamQueryString;
+                    double hourTotal = DatabaseAccess.GetHoursWeekProjectResourceTeam(connectionString, projectWeeklyHoursQueryString);
+                    if (hourTotal != 0)
                     {
-                        if (listBoxProjects.GetSelected(i))
-                        {
-                            project = listBoxProjects.Items[i].ToString();
-                            projectWeeklyHoursQueryString = headerProjectWeeklyHours + weekNumber + "' AND p.projectNumber = '" +
-                                project + "'AND" + departmentTeamQueryString;
-                            double hourTotal = DatabaseAccess.GetHoursWeekProjectResourceTeam(connectionString, projectWeeklyHoursQueryString);
-                            if (hourTotal> 0)
-                            {
-                                data.weekNumber = weekNumber;
-                                data.projectNumber = project;
-                                data.weeklyTotal = hourTotal;
-                                burnedHoursInProjects.Add(data);
-                            }
-                            
-                        }
+                        data.weekNumber = weekNumber;
+                        data.projectNumber = project;
+                        data.accountName = releveantProjects[i][1];
+                        data.projectName = releveantProjects[i][2];
+                        data.weeklyTotal = hourTotal;
+                        burnedHoursInProjects.Add(data);
                     }
-                   
                 }
+                   
+                
             }
 
-            index += 1;
-            /*
-            for (int j = 0; j < weeks.Count; j++)
-            {
-                chartForecast.Series["SeriesHoursAvailable"].Points.AddXY(weeks[j], weeklyHoursAvailable);
-            }
-            chartForecast.Update();*/
+            textBoxAvailableHours.Text = "Available Hours Weekly: " + weeklyHoursAvailable;
 
+            dataGridViewForecast.Rows.Clear();
+            chartForecast.Series.Clear();
             for (int i = 0; i < burnedHoursInProjects.Count; i++)
             {
                 if (chartForecast.Series.IndexOf(burnedHoursInProjects[i].projectNumber) == -1)
-                {
+                {   
                     //it doesn't exist so we need to add it
                     chartForecast.Series.Add(new Series(burnedHoursInProjects[i].projectNumber));
+                    chartForecast.Series[burnedHoursInProjects[i].projectNumber].IsValueShownAsLabel = false;
+                    chartForecast.Series[burnedHoursInProjects[i].projectNumber].ChartType = SeriesChartType.StackedColumn;
                 }
                 
-                chartForecast.Series[burnedHoursInProjects[i].projectNumber].IsValueShownAsLabel = false;
-                chartForecast.Series[burnedHoursInProjects[i].projectNumber].ChartType = SeriesChartType.StackedColumn;
-                chartForecast.Series[burnedHoursInProjects[i].projectNumber].Points.AddXY(burnedHoursInProjects[i].weekNumber, burnedHoursInProjects[i].weeklyTotal);
+                chartForecast.Series[burnedHoursInProjects[i].projectNumber].Points.AddXY(Convert.ToInt32(burnedHoursInProjects[i].weekNumber), burnedHoursInProjects[i].weeklyTotal);
+                chartForecast.Series[burnedHoursInProjects[i].projectNumber].ToolTip = "Project: " + burnedHoursInProjects[i].projectNumber 
+                    + "\r\nAccount: " + burnedHoursInProjects[i].accountName
+                    + "\r\nProject Name: " + burnedHoursInProjects[i].projectName
+                    + "\r\nHours: " + burnedHoursInProjects[i].weeklyTotal.ToString();
+                dataGridViewForecast.Rows.Add(burnedHoursInProjects[i].weekNumber, burnedHoursInProjects[i].projectNumber, burnedHoursInProjects[i].weeklyTotal);
             }
             chartForecast.Update();
             textBoxDebug.Text += " " + weeks.Count;

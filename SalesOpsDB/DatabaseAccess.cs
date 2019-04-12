@@ -506,7 +506,8 @@ namespace SalesOpsDB
             SqlDataReader dataReader;
 
             string sql = null;
-            sql = "select projectNumber from Project where accountName not like 'acceo' order by projectNumber;";
+            //where accountName not like 'acceo' 
+            sql = "select projectNumber from Project order by projectNumber;";
 
             cnn = new SqlConnection(connectionString);
 
@@ -605,7 +606,6 @@ namespace SalesOpsDB
 
         public static List<string> GetListofDepartments(string connectionString)
         {
-
             List<string> result = new List<string>();
 
             SqlConnection cnn;
@@ -636,6 +636,78 @@ namespace SalesOpsDB
             }
             cnn.Close();
             return result;
+        }
+
+        public static List<string[]> GetRelevantProjects(string connectionString, string weekNumber, string departmentTeamQueryString)
+        {
+            string[] projectArray = new string[3];
+            List<string[]> result = new List<string[]>();
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            //where accountName not like 'acceo' 
+            sql = "select distinct p.projectNumber, p.accountName, p.projectName from TimeSheet as ts " +
+                "inner join Week as w on w.pkWeek = ts.fkWeek " +
+                "inner join Resources as r on r.pkResource = ts.fkResource " +
+                "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
+                "where ts.weeklyTotal <> 0 and (w.weekNumber = " + weekNumber + ") and "+departmentTeamQueryString;
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    projectArray[0] = Convert.ToString(dataReader.GetValue(0)).Trim();
+                    projectArray[1] = Convert.ToString(dataReader.GetValue(1));
+                    projectArray[2] = Convert.ToString(dataReader.GetValue(2));
+                    result.Add(projectArray);
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
+        public static void ClearTimeSheetTable(string connectionString)
+        {
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            //where accountName not like 'acceo' 
+            sql = "delete from TimeSheet;";
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
         }
 
     }

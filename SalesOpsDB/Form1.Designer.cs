@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.buttonUpdateData = new System.Windows.Forms.Button();
             this.textBoxDebug = new System.Windows.Forms.TextBox();
             this.chartForecast = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -39,16 +37,24 @@
             this.tabControlMainInterface = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.listBoxProjects = new System.Windows.Forms.ListBox();
+            this.listBoxWeeks = new System.Windows.Forms.ListBox();
+            this.listBoxTeams = new System.Windows.Forms.ListBox();
             this.listBoxDepartments = new System.Windows.Forms.ListBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.listBoxTeams = new System.Windows.Forms.ListBox();
-            this.listBoxWeeks = new System.Windows.Forms.ListBox();
-            this.listBoxProjects = new System.Windows.Forms.ListBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.dataGridViewForecast = new System.Windows.Forms.DataGridView();
+            this.WeekNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ProjectNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.WeeklyTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.textBoxAvailableHours = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.chartForecast)).BeginInit();
             this.tabControlMainInterface.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewForecast)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonUpdateData
@@ -72,16 +78,9 @@
             // 
             chartArea1.Name = "ChartAreaForecast";
             this.chartForecast.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chartForecast.Legends.Add(legend1);
             this.chartForecast.Location = new System.Drawing.Point(19, 33);
             this.chartForecast.Name = "chartForecast";
-            series1.ChartArea = "ChartAreaForecast";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "SeriesHoursAvailable";
-            this.chartForecast.Series.Add(series1);
-            this.chartForecast.Size = new System.Drawing.Size(1277, 339);
+            this.chartForecast.Size = new System.Drawing.Size(1277, 442);
             this.chartForecast.TabIndex = 2;
             this.chartForecast.Text = "chart1";
             this.chartForecast.Click += new System.EventHandler(this.chartForecast_Click);
@@ -107,9 +106,10 @@
             // 
             // tabControlMainInterface
             // 
-            this.tabControlMainInterface.Controls.Add(this.tabPage1);
             this.tabControlMainInterface.Controls.Add(this.tabPage3);
             this.tabControlMainInterface.Controls.Add(this.tabPage4);
+            this.tabControlMainInterface.Controls.Add(this.tabPage5);
+            this.tabControlMainInterface.Controls.Add(this.tabPage1);
             this.tabControlMainInterface.Location = new System.Drawing.Point(28, 12);
             this.tabControlMainInterface.Name = "tabControlMainInterface";
             this.tabControlMainInterface.SelectedIndex = 0;
@@ -142,6 +142,30 @@
             this.tabPage3.Text = "Select Forecast Parameters";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // listBoxProjects
+            // 
+            this.listBoxProjects.FormattingEnabled = true;
+            this.listBoxProjects.Location = new System.Drawing.Point(521, 33);
+            this.listBoxProjects.Name = "listBoxProjects";
+            this.listBoxProjects.Size = new System.Drawing.Size(120, 251);
+            this.listBoxProjects.TabIndex = 3;
+            // 
+            // listBoxWeeks
+            // 
+            this.listBoxWeeks.FormattingEnabled = true;
+            this.listBoxWeeks.Location = new System.Drawing.Point(352, 33);
+            this.listBoxWeeks.Name = "listBoxWeeks";
+            this.listBoxWeeks.Size = new System.Drawing.Size(120, 251);
+            this.listBoxWeeks.TabIndex = 2;
+            // 
+            // listBoxTeams
+            // 
+            this.listBoxTeams.FormattingEnabled = true;
+            this.listBoxTeams.Location = new System.Drawing.Point(189, 33);
+            this.listBoxTeams.Name = "listBoxTeams";
+            this.listBoxTeams.Size = new System.Drawing.Size(120, 251);
+            this.listBoxTeams.TabIndex = 1;
+            // 
             // listBoxDepartments
             // 
             this.listBoxDepartments.FormattingEnabled = true;
@@ -152,6 +176,7 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.textBoxAvailableHours);
             this.tabPage4.Controls.Add(this.chartForecast);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
@@ -161,38 +186,62 @@
             this.tabPage4.Text = "Visualize Forecast";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // listBoxTeams
+            // tabPage5
             // 
-            this.listBoxTeams.FormattingEnabled = true;
-            this.listBoxTeams.Location = new System.Drawing.Point(189, 33);
-            this.listBoxTeams.Name = "listBoxTeams";
-            this.listBoxTeams.Size = new System.Drawing.Size(120, 251);
-            this.listBoxTeams.TabIndex = 1;
+            this.tabPage5.Controls.Add(this.dataGridViewForecast);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(1302, 481);
+            this.tabPage5.TabIndex = 3;
+            this.tabPage5.Text = "Forecast Table";
+            this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // listBoxWeeks
+            // dataGridViewForecast
             // 
-            this.listBoxWeeks.FormattingEnabled = true;
-            this.listBoxWeeks.Location = new System.Drawing.Point(352, 33);
-            this.listBoxWeeks.Name = "listBoxWeeks";
-            this.listBoxWeeks.Size = new System.Drawing.Size(120, 251);
-            this.listBoxWeeks.TabIndex = 2;
+            this.dataGridViewForecast.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewForecast.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.WeekNumber,
+            this.ProjectNumber,
+            this.WeeklyTotal});
+            this.dataGridViewForecast.Location = new System.Drawing.Point(52, 40);
+            this.dataGridViewForecast.Name = "dataGridViewForecast";
+            this.dataGridViewForecast.Size = new System.Drawing.Size(886, 426);
+            this.dataGridViewForecast.TabIndex = 0;
             // 
-            // listBoxProjects
+            // WeekNumber
             // 
-            this.listBoxProjects.FormattingEnabled = true;
-            this.listBoxProjects.Location = new System.Drawing.Point(521, 33);
-            this.listBoxProjects.Name = "listBoxProjects";
-            this.listBoxProjects.Size = new System.Drawing.Size(120, 251);
-            this.listBoxProjects.TabIndex = 3;
+            this.WeekNumber.HeaderText = "Week Number";
+            this.WeekNumber.Name = "WeekNumber";
+            // 
+            // ProjectNumber
+            // 
+            this.ProjectNumber.HeaderText = "Project Number";
+            this.ProjectNumber.Name = "ProjectNumber";
+            // 
+            // WeeklyTotal
+            // 
+            this.WeeklyTotal.HeaderText = "Weekly Total";
+            this.WeeklyTotal.Name = "WeeklyTotal";
+            // 
+            // textBoxAvailableHours
+            // 
+            this.textBoxAvailableHours.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxAvailableHours.Location = new System.Drawing.Point(436, 21);
+            this.textBoxAvailableHours.Name = "textBoxAvailableHours";
+            this.textBoxAvailableHours.Size = new System.Drawing.Size(221, 13);
+            this.textBoxAvailableHours.TabIndex = 3;
             // 
             // FormSalesOpsDB
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1350, 548);
             this.Controls.Add(this.buttonUpdateChart);
             this.Controls.Add(this.tabControlMainInterface);
             this.Name = "FormSalesOpsDB";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SalesOPsDB";
             ((System.ComponentModel.ISupportInitialize)(this.chartForecast)).EndInit();
             this.tabControlMainInterface.ResumeLayout(false);
@@ -200,6 +249,9 @@
             this.tabPage1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewForecast)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -219,6 +271,12 @@
         private System.Windows.Forms.ListBox listBoxTeams;
         private System.Windows.Forms.ListBox listBoxWeeks;
         private System.Windows.Forms.ListBox listBoxProjects;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.DataGridView dataGridViewForecast;
+        private System.Windows.Forms.DataGridViewTextBoxColumn WeekNumber;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ProjectNumber;
+        private System.Windows.Forms.DataGridViewTextBoxColumn WeeklyTotal;
+        private System.Windows.Forms.TextBox textBoxAvailableHours;
     }
 }
 
