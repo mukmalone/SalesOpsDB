@@ -28,33 +28,49 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             this.buttonUpdateData = new System.Windows.Forms.Button();
             this.textBoxDebug = new System.Windows.Forms.TextBox();
             this.buttonUpdateChart = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabControlMainInterface = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.listBoxProjects = new System.Windows.Forms.ListBox();
             this.listBoxWeeks = new System.Windows.Forms.ListBox();
             this.listBoxTeams = new System.Windows.Forms.ListBox();
             this.listBoxDepartments = new System.Windows.Forms.ListBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.chartForecast = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.textBoxAvailableHours = new System.Windows.Forms.TextBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.dataGridViewProjectAnalysis = new System.Windows.Forms.DataGridView();
             this.dataGridViewForecast = new System.Windows.Forms.DataGridView();
             this.WeekNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ProjectNumber = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.WeeklyTotal = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.textBoxAvailableHours = new System.Windows.Forms.TextBox();
-            this.chartForecast = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.ProjectNum = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AccountName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ProjectName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.NumberWeeks = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TotalEstimate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TotalHoursUsed = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HoursAtelier = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HoursElec = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HoursGestion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HoursLogiciel = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HoursMechanical = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HoursProcede = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HoursRC = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HoursRobot = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabControlMainInterface.SuspendLayout();
-            this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewForecast)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartForecast)).BeginInit();
+            this.tabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewProjectAnalysis)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewForecast)).BeginInit();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // buttonUpdateData
@@ -104,18 +120,6 @@
             this.tabControlMainInterface.SelectedIndex = 0;
             this.tabControlMainInterface.Size = new System.Drawing.Size(1310, 507);
             this.tabControlMainInterface.TabIndex = 4;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.buttonUpdateData);
-            this.tabPage1.Controls.Add(this.textBoxDebug);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1302, 481);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Update Data";
-            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
@@ -175,8 +179,27 @@
             this.tabPage4.Text = "Visualize Forecast";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // chartForecast
+            // 
+            chartArea2.Name = "ChartArea1";
+            this.chartForecast.ChartAreas.Add(chartArea2);
+            this.chartForecast.Location = new System.Drawing.Point(23, 40);
+            this.chartForecast.Name = "chartForecast";
+            this.chartForecast.Size = new System.Drawing.Size(1244, 435);
+            this.chartForecast.TabIndex = 4;
+            this.chartForecast.Text = "chart1";
+            // 
+            // textBoxAvailableHours
+            // 
+            this.textBoxAvailableHours.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBoxAvailableHours.Location = new System.Drawing.Point(436, 21);
+            this.textBoxAvailableHours.Name = "textBoxAvailableHours";
+            this.textBoxAvailableHours.Size = new System.Drawing.Size(221, 13);
+            this.textBoxAvailableHours.TabIndex = 3;
+            // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.dataGridViewProjectAnalysis);
             this.tabPage5.Controls.Add(this.dataGridViewForecast);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
@@ -186,6 +209,29 @@
             this.tabPage5.Text = "Forecast Table";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // dataGridViewProjectAnalysis
+            // 
+            this.dataGridViewProjectAnalysis.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewProjectAnalysis.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ProjectNum,
+            this.AccountName,
+            this.ProjectName,
+            this.NumberWeeks,
+            this.TotalEstimate,
+            this.TotalHoursUsed,
+            this.HoursAtelier,
+            this.HoursElec,
+            this.HoursGestion,
+            this.HoursLogiciel,
+            this.HoursMechanical,
+            this.HoursProcede,
+            this.HoursRC,
+            this.HoursRobot});
+            this.dataGridViewProjectAnalysis.Location = new System.Drawing.Point(398, 40);
+            this.dataGridViewProjectAnalysis.Name = "dataGridViewProjectAnalysis";
+            this.dataGridViewProjectAnalysis.Size = new System.Drawing.Size(849, 426);
+            this.dataGridViewProjectAnalysis.TabIndex = 1;
+            // 
             // dataGridViewForecast
             // 
             this.dataGridViewForecast.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -193,9 +239,9 @@
             this.WeekNumber,
             this.ProjectNumber,
             this.WeeklyTotal});
-            this.dataGridViewForecast.Location = new System.Drawing.Point(52, 40);
+            this.dataGridViewForecast.Location = new System.Drawing.Point(6, 40);
             this.dataGridViewForecast.Name = "dataGridViewForecast";
-            this.dataGridViewForecast.Size = new System.Drawing.Size(886, 426);
+            this.dataGridViewForecast.Size = new System.Drawing.Size(361, 426);
             this.dataGridViewForecast.TabIndex = 0;
             // 
             // WeekNumber
@@ -213,23 +259,87 @@
             this.WeeklyTotal.HeaderText = "Weekly Total";
             this.WeeklyTotal.Name = "WeeklyTotal";
             // 
-            // textBoxAvailableHours
+            // tabPage1
             // 
-            this.textBoxAvailableHours.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxAvailableHours.Location = new System.Drawing.Point(436, 21);
-            this.textBoxAvailableHours.Name = "textBoxAvailableHours";
-            this.textBoxAvailableHours.Size = new System.Drawing.Size(221, 13);
-            this.textBoxAvailableHours.TabIndex = 3;
+            this.tabPage1.Controls.Add(this.buttonUpdateData);
+            this.tabPage1.Controls.Add(this.textBoxDebug);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(1302, 481);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Update Data";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // chartForecast
+            // ProjectNum
             // 
-            chartArea1.Name = "ChartArea1";
-            this.chartForecast.ChartAreas.Add(chartArea1);
-            this.chartForecast.Location = new System.Drawing.Point(23, 40);
-            this.chartForecast.Name = "chartForecast";
-            this.chartForecast.Size = new System.Drawing.Size(1244, 435);
-            this.chartForecast.TabIndex = 4;
-            this.chartForecast.Text = "chart1";
+            this.ProjectNum.HeaderText = "Project Number";
+            this.ProjectNum.Name = "ProjectNum";
+            // 
+            // AccountName
+            // 
+            this.AccountName.HeaderText = "Account Name";
+            this.AccountName.Name = "AccountName";
+            // 
+            // ProjectName
+            // 
+            this.ProjectName.HeaderText = "Project Name";
+            this.ProjectName.Name = "ProjectName";
+            // 
+            // NumberWeeks
+            // 
+            this.NumberWeeks.HeaderText = "Number Weeks";
+            this.NumberWeeks.Name = "NumberWeeks";
+            // 
+            // TotalEstimate
+            // 
+            this.TotalEstimate.HeaderText = "Total Hours Estimated";
+            this.TotalEstimate.Name = "TotalEstimate";
+            // 
+            // TotalHoursUsed
+            // 
+            this.TotalHoursUsed.HeaderText = "Total Hours Used";
+            this.TotalHoursUsed.Name = "TotalHoursUsed";
+            // 
+            // HoursAtelier
+            // 
+            this.HoursAtelier.HeaderText = "Hours Atelier";
+            this.HoursAtelier.Name = "HoursAtelier";
+            // 
+            // HoursElec
+            // 
+            this.HoursElec.HeaderText = "Hours Elec";
+            this.HoursElec.Name = "HoursElec";
+            // 
+            // HoursGestion
+            // 
+            this.HoursGestion.HeaderText = "Hours Gestion";
+            this.HoursGestion.Name = "HoursGestion";
+            // 
+            // HoursLogiciel
+            // 
+            this.HoursLogiciel.HeaderText = "Hours Logiciel";
+            this.HoursLogiciel.Name = "HoursLogiciel";
+            // 
+            // HoursMechanical
+            // 
+            this.HoursMechanical.HeaderText = "Hours Mechanical";
+            this.HoursMechanical.Name = "HoursMechanical";
+            // 
+            // HoursProcede
+            // 
+            this.HoursProcede.HeaderText = "Hours Procede";
+            this.HoursProcede.Name = "HoursProcede";
+            // 
+            // HoursRC
+            // 
+            this.HoursRC.HeaderText = "Hours RC";
+            this.HoursRC.Name = "HoursRC";
+            // 
+            // HoursRobot
+            // 
+            this.HoursRobot.HeaderText = "Hours Robot";
+            this.HoursRobot.Name = "HoursRobot";
             // 
             // FormSalesOpsDB
             // 
@@ -243,14 +353,15 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SalesOPsDB";
             this.tabControlMainInterface.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
-            this.tabPage5.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewForecast)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartForecast)).EndInit();
+            this.tabPage5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewProjectAnalysis)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewForecast)).EndInit();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -276,6 +387,21 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn WeeklyTotal;
         private System.Windows.Forms.TextBox textBoxAvailableHours;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartForecast;
+        private System.Windows.Forms.DataGridView dataGridViewProjectAnalysis;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ProjectNum;
+        private System.Windows.Forms.DataGridViewTextBoxColumn AccountName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ProjectName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn NumberWeeks;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TotalEstimate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn TotalHoursUsed;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HoursAtelier;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HoursElec;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HoursGestion;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HoursLogiciel;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HoursMechanical;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HoursProcede;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HoursRC;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HoursRobot;
     }
 }
 

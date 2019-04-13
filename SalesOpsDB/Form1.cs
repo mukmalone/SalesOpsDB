@@ -67,6 +67,16 @@ struct WeeklyProjectBurn
     public string accountName;
     public string projectName;
     public double weeklyTotal;
+    public double numberWeeks;
+    public double hoursAtelier;
+    public double hoursElec;
+    public double hoursGestion;
+    public double hoursLogiciel;
+    public double hoursMechanical;
+    public double hoursProcede;
+    public double hoursRC;
+    public double hoursRobot;
+    public double totalHoursEstimated;
 }
 
 namespace SalesOpsDB
@@ -526,10 +536,8 @@ namespace SalesOpsDB
             List<double> hours = new List<double>();
             double runningTotal;
 
-
-
             //*******************************************************************************
-            //this is where all the charting of existing efforts go
+            //Charting of existing efforts go
             //*******************************************************************************
 
             //get weekly hours available for the resources selected
@@ -618,6 +626,16 @@ namespace SalesOpsDB
                         data.accountName = releveantProjects[i][1];
                         data.projectName = releveantProjects[i][2];
                         data.weeklyTotal = hourTotal;
+                        data.numberWeeks = Convert.ToDouble(releveantProjects[i][3]);
+                        data.hoursAtelier = Convert.ToDouble(releveantProjects[i][4]);
+                        data.hoursElec = Convert.ToDouble(releveantProjects[i][5]);
+                        data.hoursGestion = Convert.ToDouble(releveantProjects[i][6]);
+                        data.hoursLogiciel = Convert.ToDouble(releveantProjects[i][7]);
+                        data.hoursMechanical = Convert.ToDouble(releveantProjects[i][8]);
+                        data.hoursProcede = Convert.ToDouble(releveantProjects[i][9]);
+                        data.hoursRC = Convert.ToDouble(releveantProjects[i][10]);
+                        data.hoursRobot = Convert.ToDouble(releveantProjects[i][11]);
+                        data.totalHoursEstimated = Convert.ToDouble(releveantProjects[i][12]);
                         burnedHoursInProjects.Add(data);
                     }
                 }
@@ -628,7 +646,9 @@ namespace SalesOpsDB
             textBoxAvailableHours.Text = "Available Hours Weekly: " + weeklyHoursAvailable;
 
             dataGridViewForecast.Rows.Clear();
+            dataGridViewProjectAnalysis.Rows.Clear();
             chartForecast.Series.Clear();
+
             for (int i = 0; i < burnedHoursInProjects.Count; i++)
             {
                 if (chartForecast.Series.IndexOf(burnedHoursInProjects[i].projectNumber) == -1)
@@ -646,6 +666,43 @@ namespace SalesOpsDB
                     + "\r\nHours: " + burnedHoursInProjects[i].weeklyTotal.ToString();
                     
                 dataGridViewForecast.Rows.Add(burnedHoursInProjects[i].weekNumber, burnedHoursInProjects[i].projectNumber, burnedHoursInProjects[i].weeklyTotal);
+
+                int addTrigger = 1;
+                if(dataGridViewProjectAnalysis.Rows.Count == 1)
+                {
+                    //we add the first row
+                    //gotta add the first time
+                    dataGridViewProjectAnalysis.Rows.Add(burnedHoursInProjects[i].projectNumber, burnedHoursInProjects[i].accountName,
+                        burnedHoursInProjects[i].projectName, burnedHoursInProjects[i].numberWeeks, burnedHoursInProjects[i].totalHoursEstimated,
+                        DatabaseAccess.GetProjectHoursTotal(connectionString, burnedHoursInProjects[i].projectNumber),
+                        burnedHoursInProjects[i].hoursAtelier, burnedHoursInProjects[i].hoursElec,
+                        burnedHoursInProjects[i].hoursGestion,
+                        burnedHoursInProjects[i].hoursLogiciel, burnedHoursInProjects[i].hoursMechanical, burnedHoursInProjects[i].hoursProcede,
+                        burnedHoursInProjects[i].hoursRC, burnedHoursInProjects[i].hoursRobot);
+                }
+                else
+                {
+                    for (int j = 0; j < dataGridViewProjectAnalysis.Rows.Count - 1; j++)
+                    {
+                        if (dataGridViewProjectAnalysis.Rows[j].Cells["ProjectNum"].Value.ToString() == burnedHoursInProjects[i].projectNumber)
+                        {
+                            //data is already in table
+                            addTrigger = 0;
+                        }
+                    }
+                    if (addTrigger == 1)
+                    {
+                        //gotta add the first time
+                        dataGridViewProjectAnalysis.Rows.Add(burnedHoursInProjects[i].projectNumber, burnedHoursInProjects[i].accountName,
+                            burnedHoursInProjects[i].projectName, burnedHoursInProjects[i].numberWeeks, burnedHoursInProjects[i].totalHoursEstimated,
+                            DatabaseAccess.GetProjectHoursTotal(connectionString, burnedHoursInProjects[i].projectNumber),
+                            burnedHoursInProjects[i].hoursAtelier, burnedHoursInProjects[i].hoursElec,
+                            burnedHoursInProjects[i].hoursGestion,
+                            burnedHoursInProjects[i].hoursLogiciel, burnedHoursInProjects[i].hoursMechanical, burnedHoursInProjects[i].hoursProcede,
+                            burnedHoursInProjects[i].hoursRC, burnedHoursInProjects[i].hoursRobot);
+                    }
+                }
+                
             }
             chartForecast.Update();
             textBoxDebug.Text += " " + weeks.Count;

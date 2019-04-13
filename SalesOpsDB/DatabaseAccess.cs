@@ -648,7 +648,8 @@ namespace SalesOpsDB
             SqlDataReader dataReader;
 
             string sql = null;
-            sql = "select distinct p.projectNumber, p.accountName, p.projectName from TimeSheet as ts " +
+            sql = "select distinct p.projectNumber, p.accountName, p.projectName,p.numberWeeks,p.hoursAtelier,p.hoursElec,p.hoursGestion, " +
+                "p.hoursLogiciel,p.hoursMechanical, p.hoursProcede, p.hoursRC, p.hoursRobot, p.totalHoursEstimated from TimeSheet as ts " +
                 "inner join Week as w on w.pkWeek = ts.fkWeek " +
                 "inner join Resources as r on r.pkResource = ts.fkResource " +
                 "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
@@ -664,10 +665,20 @@ namespace SalesOpsDB
                 dataReader = command.ExecuteReader();
                 while (dataReader.Read())
                 {
-                    string[] projectArray = new string[3];
+                    string[] projectArray = new string[13];
                     projectArray[0] = Convert.ToString(dataReader.GetValue(0)).Trim();
                     projectArray[1] = Convert.ToString(dataReader.GetValue(1));
                     projectArray[2] = Convert.ToString(dataReader.GetValue(2));
+                    projectArray[3] = Convert.ToString(dataReader.GetValue(3));
+                    projectArray[4] = Convert.ToString(dataReader.GetValue(4));
+                    projectArray[5] = Convert.ToString(dataReader.GetValue(5));
+                    projectArray[6] = Convert.ToString(dataReader.GetValue(6));
+                    projectArray[7] = Convert.ToString(dataReader.GetValue(7));
+                    projectArray[8] = Convert.ToString(dataReader.GetValue(8));
+                    projectArray[9] = Convert.ToString(dataReader.GetValue(9));
+                    projectArray[10] = Convert.ToString(dataReader.GetValue(10));
+                    projectArray[11] = Convert.ToString(dataReader.GetValue(11));
+                    projectArray[12] = Convert.ToString(dataReader.GetValue(12));
                     result.Add(projectArray);
                 }
                 dataReader.Close();
@@ -709,5 +720,46 @@ namespace SalesOpsDB
             cnn.Close();
         }
 
+        public static double GetProjectHoursTotal(string connectionString, string projectNumber)
+        {
+            double result = 0;
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select sum(ts.weeklyTotal) from TimeSheet as ts " +
+                "inner join week as w on w.pkWeek = ts.fkWeek " +
+                "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
+                "where p.projectNumber = '" + projectNumber.Trim() + "'";          
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result = Convert.ToDouble(dataReader.GetValue(0));
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
     }
 }
+
+
+
