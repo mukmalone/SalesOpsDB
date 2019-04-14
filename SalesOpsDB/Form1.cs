@@ -667,18 +667,26 @@ namespace SalesOpsDB
                     
                 dataGridViewForecast.Rows.Add(burnedHoursInProjects[i].weekNumber, burnedHoursInProjects[i].projectNumber, burnedHoursInProjects[i].weeklyTotal);
 
+                double testie = DatabaseAccess.GetDepartmentProjectTotal(connectionString, "5520", "electrical");
                 int addTrigger = 1;
                 if(dataGridViewProjectAnalysis.Rows.Count == 1)
                 {
                     //we add the first row
                     //gotta add the first time
-                    dataGridViewProjectAnalysis.Rows.Add(burnedHoursInProjects[i].projectNumber, burnedHoursInProjects[i].accountName,
-                        burnedHoursInProjects[i].projectName, burnedHoursInProjects[i].numberWeeks, burnedHoursInProjects[i].totalHoursEstimated,
+                    dataGridViewProjectAnalysis.Rows.Add(burnedHoursInProjects[i].projectNumber, 
+                        burnedHoursInProjects[i].accountName, burnedHoursInProjects[i].projectName, 
+                        burnedHoursInProjects[i].numberWeeks, burnedHoursInProjects[i].totalHoursEstimated,
                         DatabaseAccess.GetProjectHoursTotal(connectionString, burnedHoursInProjects[i].projectNumber),
-                        burnedHoursInProjects[i].hoursAtelier, burnedHoursInProjects[i].hoursElec,
-                        burnedHoursInProjects[i].hoursGestion,
-                        burnedHoursInProjects[i].hoursLogiciel, burnedHoursInProjects[i].hoursMechanical, burnedHoursInProjects[i].hoursProcede,
-                        burnedHoursInProjects[i].hoursRC, burnedHoursInProjects[i].hoursRobot);
+                        burnedHoursInProjects[i].hoursAtelier, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Atelier"),
+                        burnedHoursInProjects[i].hoursElec, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Electrical"),
+                        burnedHoursInProjects[i].hoursGestion, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "pm' or r.department " +
+                        "like 'admin' or r.department like 'accounting' or r.department like 'BD' or r.department like 'estimation' or r.department like 'it' or r.department like " +
+                        "'legal' or r.department like 'marketing' or r.department like 'purchasing' or r.department like 'rh"),
+                        burnedHoursInProjects[i].hoursLogiciel, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Logiciel' or r.department like 'AVI"),
+                        burnedHoursInProjects[i].hoursMechanical, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Mechanical"),
+                        burnedHoursInProjects[i].hoursProcede, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "FR"),
+                        burnedHoursInProjects[i].hoursRC, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "RC"),
+                        burnedHoursInProjects[i].hoursRobot, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Robot"));
                 }
                 else
                 {
@@ -693,13 +701,20 @@ namespace SalesOpsDB
                     if (addTrigger == 1)
                     {
                         //gotta add the first time
-                        dataGridViewProjectAnalysis.Rows.Add(burnedHoursInProjects[i].projectNumber, burnedHoursInProjects[i].accountName,
-                            burnedHoursInProjects[i].projectName, burnedHoursInProjects[i].numberWeeks, burnedHoursInProjects[i].totalHoursEstimated,
-                            DatabaseAccess.GetProjectHoursTotal(connectionString, burnedHoursInProjects[i].projectNumber),
-                            burnedHoursInProjects[i].hoursAtelier, burnedHoursInProjects[i].hoursElec,
-                            burnedHoursInProjects[i].hoursGestion,
-                            burnedHoursInProjects[i].hoursLogiciel, burnedHoursInProjects[i].hoursMechanical, burnedHoursInProjects[i].hoursProcede,
-                            burnedHoursInProjects[i].hoursRC, burnedHoursInProjects[i].hoursRobot);
+                        dataGridViewProjectAnalysis.Rows.Add(burnedHoursInProjects[i].projectNumber,
+    burnedHoursInProjects[i].accountName, burnedHoursInProjects[i].projectName,
+    burnedHoursInProjects[i].numberWeeks, burnedHoursInProjects[i].totalHoursEstimated,
+    DatabaseAccess.GetProjectHoursTotal(connectionString, burnedHoursInProjects[i].projectNumber),
+    burnedHoursInProjects[i].hoursAtelier, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Atelier"),
+    burnedHoursInProjects[i].hoursElec, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Electrical"),
+    burnedHoursInProjects[i].hoursGestion, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "pm' or r.department " +
+    "like 'admin' or r.department like 'accounting' or r.department like 'BD' or r.department like 'estimation' or r.department like 'it' or r.department like " +
+    "'legal' or r.department like 'marketing' or r.department like 'purchasing' or r.department like 'rh"),
+    burnedHoursInProjects[i].hoursLogiciel, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Logiciel' or r.department like 'AVI"),
+    burnedHoursInProjects[i].hoursMechanical, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Mechanical"),
+    burnedHoursInProjects[i].hoursProcede, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "FR"),
+    burnedHoursInProjects[i].hoursRC, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Automation"),
+    burnedHoursInProjects[i].hoursRobot, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Robot"));
                     }
                 }
                 
@@ -710,6 +725,11 @@ namespace SalesOpsDB
         }
 
         private void chartForecast_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabPage3_Click(object sender, EventArgs e)
         {
 
         }

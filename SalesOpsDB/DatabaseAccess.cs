@@ -758,6 +758,45 @@ namespace SalesOpsDB
             return result;
         }
 
+        public static double GetDepartmentProjectTotal(string connectionString, string projectNumber, string department)
+        {
+            double result = 0;
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select sum(ts.weeklyTotal) from TimeSheet as ts " +
+                "inner join week as w on w.pkWeek = ts.fkWeek " +
+                "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
+                "inner join Resources as r on r.pkResource = ts.fkResource " +
+                "where p.projectNumber = '" + projectNumber.Trim() + "'" + " and (r.department like '" + department +"');";
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result = Convert.ToDouble(dataReader.GetValue(0));
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
     }
 }
 
