@@ -135,7 +135,7 @@ namespace SalesOpsDB
             String salesCsv;
             string[] lines;
             //get the file
-            salesCsv = File.ReadAllText("C:\\Users\\mmuldoon\\source\\repos\\SalesOps\\SalesOps\\excel\\salesforce.csv");
+            salesCsv = File.ReadAllText("C:\\Users\\mmuldoon\\source\\repos\\SalesOpsDB\\SalesOpsDB\\excel\\salesforce.csv");
 
             //remove the " which SF puts in
             salesCsv = salesCsv.Replace('"', ' ');
@@ -348,7 +348,7 @@ namespace SalesOpsDB
             String acceoCsv;
             string[] linesAcceo;
             //get the file
-            acceoCsv = File.ReadAllText("C:\\Users\\mmuldoon\\source\\repos\\SalesOps\\SalesOps\\excel\\acceo.csv");
+            acceoCsv = File.ReadAllText("C:\\Users\\mmuldoon\\source\\repos\\SalesOpsDB\\SalesOpsDB\\excel\\acceo.csv");
 
             //remove the " which SF puts in
             acceoCsv = acceoCsv.Replace('"', ' ');
