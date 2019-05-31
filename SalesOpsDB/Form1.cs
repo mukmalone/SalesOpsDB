@@ -66,6 +66,8 @@ struct WeeklyProjectBurn
     public string projectNumber;
     public string accountName;
     public string projectName;
+    public string poCloseDate;
+    public string mainProcess;
     public double weeklyTotal;
     public double numberWeeks;
     public double hoursAtelier;
@@ -534,7 +536,7 @@ namespace SalesOpsDB
             List<string> projects = DatabaseAccess.GetListofProjects(connectionString);
 
             List<double> hours = new List<double>();
-            double runningTotal;
+            //double runningTotal;
 
             //*******************************************************************************
             //Charting of existing efforts go
@@ -636,6 +638,8 @@ namespace SalesOpsDB
                         data.hoursRC = Convert.ToDouble(releveantProjects[i][10]);
                         data.hoursRobot = Convert.ToDouble(releveantProjects[i][11]);
                         data.totalHoursEstimated = Convert.ToDouble(releveantProjects[i][12]);
+                        data.poCloseDate = releveantProjects[i][13].Substring(0,releveantProjects[i][13].IndexOf(" "));
+                        data.mainProcess = releveantProjects[i][14];
                         burnedHoursInProjects.Add(data);
                     }
                 }
@@ -674,7 +678,8 @@ namespace SalesOpsDB
                     //we add the first row
                     //gotta add the first time
                     dataGridViewProjectAnalysis.Rows.Add(burnedHoursInProjects[i].projectNumber, 
-                        burnedHoursInProjects[i].accountName, burnedHoursInProjects[i].projectName, 
+                        burnedHoursInProjects[i].accountName, burnedHoursInProjects[i].projectName,
+                        burnedHoursInProjects[i].mainProcess, burnedHoursInProjects[i].poCloseDate,
                         burnedHoursInProjects[i].numberWeeks, burnedHoursInProjects[i].totalHoursEstimated,
                         DatabaseAccess.GetProjectHoursTotal(connectionString, burnedHoursInProjects[i].projectNumber),
                         burnedHoursInProjects[i].hoursAtelier, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Atelier"),
@@ -703,6 +708,7 @@ namespace SalesOpsDB
                         //gotta add the first time
                         dataGridViewProjectAnalysis.Rows.Add(burnedHoursInProjects[i].projectNumber,
     burnedHoursInProjects[i].accountName, burnedHoursInProjects[i].projectName,
+    burnedHoursInProjects[i].mainProcess, burnedHoursInProjects[i].poCloseDate,
     burnedHoursInProjects[i].numberWeeks, burnedHoursInProjects[i].totalHoursEstimated,
     DatabaseAccess.GetProjectHoursTotal(connectionString, burnedHoursInProjects[i].projectNumber),
     burnedHoursInProjects[i].hoursAtelier, DatabaseAccess.GetDepartmentProjectTotal(connectionString, burnedHoursInProjects[i].projectNumber, "Atelier"),
@@ -730,6 +736,90 @@ namespace SalesOpsDB
         }
 
         private void tabPage3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dataGridViewProjectAnalysis_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            
+
+        }
+
+        private void buttonChartProjectProfile_Click(object sender, EventArgs e)
+        {
+            string connectionString = @"Data Source=AVR-L093\SQLEXPRESS;Initial Catalog=SalesOps;Integrated Security=SSPI;";
+            textBoxError.Text = "";
+            if (dataGridViewProjectAnalysis.SelectedRows.Count == 0)
+            {
+                textBoxError.Text = "Please select a row";
+            }
+            else
+            {
+                textBoxError.Text = "Processing";
+                string projectNumber = dataGridViewProjectAnalysis.Rows[dataGridViewProjectAnalysis.SelectedRows[0].Index].Cells[0].Value.ToString();
+
+                textBoxError.Text = projectNumber;
+                List<string> weekList = DatabaseAccess.GetWeeks(connectionString);
+
+                chartWeekTotal.Series[0].Points.Clear();
+                chartFR.Series[0].Points.Clear();
+                chartAVI.Series[0].Points.Clear();
+                chartLogiciel.Series[0].Points.Clear();
+                chartElectrical.Series[0].Points.Clear();
+                chartMechanical.Series[0].Points.Clear();
+                chartPM.Series[0].Points.Clear();
+                chartRC.Series[0].Points.Clear();
+                chartRobot.Series[0].Points.Clear();
+                chartAtelier.Series[0].Points.Clear();
+
+                textBoxProjectNumber.Text = "Project: " + projectNumber;
+                textBoxAccountName.Text = "Account: " + dataGridViewProjectAnalysis.Rows[dataGridViewProjectAnalysis.SelectedRows[0].Index].Cells[1].Value.ToString();
+                textBoxProjectName.Text = "Project Name: " + dataGridViewProjectAnalysis.Rows[dataGridViewProjectAnalysis.SelectedRows[0].Index].Cells[2].Value.ToString();
+                textBoxMainProcess.Text = "Main Process: " + dataGridViewProjectAnalysis.Rows[dataGridViewProjectAnalysis.SelectedRows[0].Index].Cells[3].Value.ToString();
+                textBoxPOCloseDate.Text = "PO Close Date: " + dataGridViewProjectAnalysis.Rows[dataGridViewProjectAnalysis.SelectedRows[0].Index].Cells[4].Value.ToString();
+                textBoxNumberWeeksEst.Text = "# of Weeks Estimated: " + dataGridViewProjectAnalysis.Rows[dataGridViewProjectAnalysis.SelectedRows[0].Index].Cells[5].Value.ToString();
+                textBoxTotalHoursEst.Text = "Total hours Estimated: " + dataGridViewProjectAnalysis.Rows[dataGridViewProjectAnalysis.SelectedRows[0].Index].Cells[6].Value.ToString();
+                textBoxTotalHoursUsed.Text = "Total hours Used: " + dataGridViewProjectAnalysis.Rows[dataGridViewProjectAnalysis.SelectedRows[0].Index].Cells[7].Value.ToString();
+
+
+                weekList.ForEach(delegate (String week)
+                {
+                    //start charting                    
+                    chartWeekTotal.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "ALL"));
+                    chartFR.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "FR"));
+                    chartAVI.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "AVI"));
+                    chartLogiciel.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "Logiciel"));
+                    chartElectrical.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "Electrical"));
+                    chartMechanical.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "Mechanical"));
+                    chartPM.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "PM"));
+                    chartRC.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "RC"));
+                    chartRobot.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "Robot"));
+                    chartAtelier.Series[0].Points.AddXY(week, DatabaseAccess.GetWeeklyProjectTotal(connectionString, week, projectNumber, "Atelier"));
+                });
+                chartWeekTotal.Update();
+                chartFR.Update();
+                chartAVI.Update();
+                chartLogiciel.Update();
+                chartElectrical.Update();
+                chartMechanical.Update();
+                chartPM.Update();
+                chartRC.Update();
+                chartRobot.Update();
+                chartAtelier.Update();
+
+
+                textBoxError.Text = "done";
+            }
+            
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void chartWeekTotal_Click(object sender, EventArgs e)
         {
 
         }

@@ -649,7 +649,7 @@ namespace SalesOpsDB
 
             string sql = null;
             sql = "select distinct p.projectNumber, p.accountName, p.projectName,p.numberWeeks,p.hoursAtelier,p.hoursElec,p.hoursGestion, " +
-                "p.hoursLogiciel,p.hoursMechanical, p.hoursProcede, p.hoursRC, p.hoursRobot, p.totalHoursEstimated from TimeSheet as ts " +
+                "p.hoursLogiciel,p.hoursMechanical, p.hoursProcede, p.hoursRC, p.hoursRobot, p.totalHoursEstimated, p.closeDate, p.mainProcess from TimeSheet as ts " +
                 "inner join Week as w on w.pkWeek = ts.fkWeek " +
                 "inner join Resources as r on r.pkResource = ts.fkResource " +
                 "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
@@ -665,7 +665,7 @@ namespace SalesOpsDB
                 dataReader = command.ExecuteReader();
                 while (dataReader.Read())
                 {
-                    string[] projectArray = new string[13];
+                    string[] projectArray = new string[15];
                     projectArray[0] = Convert.ToString(dataReader.GetValue(0)).Trim();
                     projectArray[1] = Convert.ToString(dataReader.GetValue(1));
                     projectArray[2] = Convert.ToString(dataReader.GetValue(2));
@@ -679,6 +679,8 @@ namespace SalesOpsDB
                     projectArray[10] = Convert.ToString(dataReader.GetValue(10));
                     projectArray[11] = Convert.ToString(dataReader.GetValue(11));
                     projectArray[12] = Convert.ToString(dataReader.GetValue(12));
+                    projectArray[13] = Convert.ToString(dataReader.GetValue(13));
+                    projectArray[14] = Convert.ToString(dataReader.GetValue(14));
                     result.Add(projectArray);
                 }
                 dataReader.Close();
@@ -772,6 +774,92 @@ namespace SalesOpsDB
                 "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
                 "inner join Resources as r on r.pkResource = ts.fkResource " +
                 "where p.projectNumber = '" + projectNumber.Trim() + "'" + " and (r.department like '" + department +"');";
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result = Convert.ToDouble(dataReader.GetValue(0));
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Can not open connection projectNumberPK");
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
+        public static List<string> GetWeeks(string connectionString)
+        {
+
+            List<string> result = new List<string>();
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select Week.weekNumber from Week order by Week.weekNumber; " ;
+
+            cnn = new SqlConnection(connectionString);
+
+            try
+            {
+                cnn.Open();
+
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    result.Add(Convert.ToString(dataReader.GetValue(0)).Trim());
+                }
+                dataReader.Close();
+                command.Dispose();
+            }
+            catch (Exception ex)
+            {
+                DatabaseAccess.WriteDebugToDatabase(connectionString, sql, DateTime.Now);
+            }
+            cnn.Close();
+            return result;
+        }
+
+        public static double GetWeeklyProjectTotal(string connectionString, string weekNumber, string projectNumber, string department)
+        {
+            double result = 0;
+
+            SqlConnection cnn;
+            SqlCommand command;
+            SqlDataReader dataReader;
+
+            string sql = null;
+            sql = "select sum(ts.weeklyTotal) from TimeSheet as ts " +
+                "inner join week as w on w.pkWeek = ts.fkWeek " +
+                "inner join Project as p on p.pkProjectNumber = ts.fkOpportunity " +
+                "inner join Resources as r on r.pkResource = ts.fkResource " +
+                "where p.projectNumber = '" + projectNumber + "' and w.weekNumber = '" + weekNumber + "'";
+
+            if(department == "ALL")
+            {
+                //all departments
+                sql += ";";
+            }
+            else
+            {
+                sql += " and r.department = '" + department + "';";
+            }
+
+                 
 
             cnn = new SqlConnection(connectionString);
 
